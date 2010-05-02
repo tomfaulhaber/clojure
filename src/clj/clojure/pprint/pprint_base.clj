@@ -249,7 +249,7 @@ where obj is the object to pretty print. That function will be called with *out*
 to a pretty printing writer to which it should do its printing.
 
 For example functions, see *simple-dispatch* and *code-dispatch* in 
-clojure.contrib.pprint.dispatch.clj."
+clojure.pprint.dispatch.clj."
   [function]
   (let [old-meta (meta #'*print-pprint-dispatch*)]
     (alter-var-root #'*print-pprint-dispatch* (constantly function))
