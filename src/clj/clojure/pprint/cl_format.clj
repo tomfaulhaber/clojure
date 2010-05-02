@@ -1181,12 +1181,13 @@ It prints a table of squares and cubes for the numbers from 1 to 10:
 ;;; Support for column-aware operations ~&, ~T
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; TODO: make an automatic newline for non-ColumnWriters
 (defn fresh-line
-  "Make a newline if the Writer is not already at the beginning of the line.
-N.B. Only works on ColumnWriters right now."
+  "Make a newline if *out* is not already at the beginning of the line. If *out* is
+not a pretty writer (which keps track of columns), this function always output a newline."
   []
-  (if (not (= 0 (get-column (:base @@*out*))))
+  (if (instance? clojure.lang.IDeref *out*)
+    (if (not (= 0 (get-column (:base @@*out*))))
+      (prn))
     (prn)))
 
 (defn- absolute-tabulation [params navigator offsets]
