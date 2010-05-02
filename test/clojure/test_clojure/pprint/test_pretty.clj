@@ -122,3 +122,72 @@ Usage: *hello*
 	   :stream nil))
   "'foo"
 )
+
+(simple-tests code-block-tests 
+ (with-out-str
+   (with-pprint-dispatch *code-dispatch* 
+     (pprint 
+      '(defn cl-format 
+         "An implementation of a Common Lisp compatible format function"
+         [stream format-in & args]
+         (let [compiled-format (if (string? format-in) (compile-format format-in) format-in)
+               navigator (init-navigator args)]
+           (execute-format stream compiled-format navigator))))))
+ "(defn cl-format
+  \"An implementation of a Common Lisp compatible format function\"
+  [stream format-in & args]
+  (let [compiled-format (if (string? format-in)
+                          (compile-format format-in)
+                          format-in)
+        navigator (init-navigator args)]
+    (execute-format stream compiled-format navigator)))
+"
+
+ (with-out-str
+   (with-pprint-dispatch *code-dispatch* 
+     (pprint 
+      '(defn pprint-defn [writer alis]
+         (if (next alis) 
+           (let [[defn-sym defn-name & stuff] alis
+                 [doc-str stuff] (if (string? (first stuff))
+                                   [(first stuff) (next stuff)]
+                                   [nil stuff])
+                 [attr-map stuff] (if (map? (first stuff))
+                                    [(first stuff) (next stuff)]
+                                    [nil stuff])]
+             (pprint-logical-block writer :prefix "(" :suffix ")"
+                                   (cl-format true "~w ~1I~@_~w" defn-sym defn-name)
+                                   (if doc-str
+                                     (cl-format true " ~_~w" doc-str))
+                                   (if attr-map
+                                     (cl-format true " ~_~w" attr-map))
+                                   ;; Note: the multi-defn case will work OK for malformed defns too
+                                   (cond
+                                    (vector? (first stuff)) (single-defn stuff (or doc-str attr-map))
+                                    :else (multi-defn stuff (or doc-str attr-map)))))
+           (pprint-simple-code-list writer alis))))))
+ "(defn pprint-defn [writer alis]
+  (if (next alis)
+    (let [[defn-sym defn-name & stuff] alis
+          [doc-str stuff] (if (string? (first stuff))
+                            [(first stuff) (next stuff)]
+                            [nil stuff])
+          [attr-map stuff] (if (map? (first stuff))
+                             [(first stuff) (next stuff)]
+                             [nil stuff])]
+      (pprint-logical-block
+        writer
+        :prefix
+        \"(\"
+        :suffix
+        \")\"
+        (cl-format true \"~w ~1I~@_~w\" defn-sym defn-name)
+        (if doc-str (cl-format true \" ~_~w\" doc-str))
+        (if attr-map (cl-format true \" ~_~w\" attr-map))
+        (cond
+          (vector? (first stuff)) (single-defn
+                                    stuff
+                                    (or doc-str attr-map))
+          :else (multi-defn stuff (or doc-str attr-map)))))
+    (pprint-simple-code-list writer alis)))
+")

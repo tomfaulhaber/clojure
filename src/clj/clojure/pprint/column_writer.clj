@@ -43,7 +43,7 @@
 (defn get-writer [this]
   (get-field this :base))
 
-(defn- write-char [#^Writer this #^Integer c]
+(defn- c-write-char [#^Writer this #^Integer c]
   (dosync (if (= c (int \newline))
 	    (do
               (set-field this :cur 0)
@@ -75,4 +75,4 @@
                  (.write #^Writer (get-field this :base) s))
 
                Integer
-               (write-char this x))))))))
+               (c-write-char this x))))))))

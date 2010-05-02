@@ -342,7 +342,7 @@
      (.write (getf :base) tws)
      (setf :trailing-white-space nil))))
 
-(defn- write-char [#^Writer this #^Integer c]
+(defn- p-write-char [#^Writer this #^Integer c]
   (if (= (getf :mode) :writing)
     (do 
       (write-white-space this)
@@ -398,7 +398,7 @@
                    (add-to-buffer this (make-buffer-blob s white-space oldpos newpos))))))
 
             Integer
-            (write-char this x))))
+            (p-write-char this x))))
 
       (flush []
              (if (= (getf :mode) :buffering)
