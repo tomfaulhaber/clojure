@@ -34,21 +34,21 @@
 ;;; ~@ - Also fully eaten by the processing of ` and can't be used outside.
 ;;; ,  - is whitespace and is lost (like all other whitespace). Formats can generate commas
 ;;;      where they deem them useful to help readability.
-;;; #^ - Adding metadata completely disappears at read time and the data appears to be
+;;; ^  - Adding metadata completely disappears at read time and the data appears to be
 ;;;      completely lost.
 ;;;
 ;;; Most other syntax stuff is dealt with directly by the formats (like (), [], {}, and #{})
 ;;; or directly by printing the objects using Clojure's built-in print functions (like
 ;;; :keyword, \char, or ""). The notable exception is #() which is special-cased.
 
-(def #^{:private true} reader-macros
+(def ^{:private true} reader-macros
      {'quote "'", 'clojure.core/deref "@", 
       'var "#'", 'clojure.core/unquote "~"})
 
 (defn- pprint-reader-macro [alis]
-  (let [#^String macro-char (reader-macros (first alis))]
+  (let [^String macro-char (reader-macros (first alis))]
     (when (and macro-char (= 2 (count alis)))
-      (.write #^java.io.Writer *out* macro-char)
+      (.write ^java.io.Writer *out* macro-char)
       (write-out (second alis))
       true)))
 
@@ -68,7 +68,7 @@
       (when alis
 	(write-out (first alis))
 	(when (next alis)
-	  (.write #^java.io.Writer *out* " ")
+	  (.write ^java.io.Writer *out* " ")
 	  (pprint-newline :linear)
 	  (recur (next alis)))))))
 
@@ -83,11 +83,11 @@
       (when aseq
 	(write-out (first aseq))
 	(when (next aseq)
-	  (.write #^java.io.Writer *out* " ")
+	  (.write ^java.io.Writer *out* " ")
 	  (pprint-newline :linear)
 	  (recur (next aseq)))))))
 
-(def #^{:private true} pprint-array (formatter-out "~<[~;~@{~w~^, ~:_~}~;]~:>"))
+(def ^{:private true} pprint-array (formatter-out "~<[~;~@{~w~^, ~:_~}~;]~:>"))
 
 ;;; (def pprint-map (formatter-out "~<{~;~@{~<~w~^ ~_~w~:>~^, ~_~}~;}~:>"))
 (defn- pprint-map [amap]
@@ -96,15 +96,15 @@
       (when aseq
 	(pprint-logical-block 
           (write-out (ffirst aseq))
-          (.write #^java.io.Writer *out* " ")
+          (.write ^java.io.Writer *out* " ")
           (pprint-newline :linear)
           (write-out (fnext (first aseq))))
         (when (next aseq)
-          (.write #^java.io.Writer *out* ", ")
+          (.write ^java.io.Writer *out* ", ")
           (pprint-newline :linear)
           (recur (next aseq)))))))
 
-(def #^{:private true} pprint-set (formatter-out "~<#{~;~@{~w~^ ~:_~}~;}~:>"))
+(def ^{:private true} pprint-set (formatter-out "~<#{~;~@{~w~^ ~:_~}~;}~:>"))
 (defn- pprint-ref [ref]
   (pprint-logical-block  :prefix "#<Ref " :suffix ">"
     (write-out @ref)))
@@ -149,7 +149,7 @@
 ;;; won't give it to us now).
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def #^{:private true} pprint-hold-first (formatter-out "~:<~w~^ ~@_~w~^ ~_~@{~w~^ ~_~}~:>"))
+(def ^{:private true} pprint-hold-first (formatter-out "~:<~w~^ ~@_~w~^ ~_~@{~w~^ ~_~}~:>"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Format something that looks like a defn or defmacro
@@ -203,11 +203,11 @@
         (pprint-logical-block binding
           (write-out (first binding))
           (when (next binding)
-            (.write #^java.io.Writer *out* " ")
+            (.write ^java.io.Writer *out* " ")
             (pprint-newline :miser)
             (write-out (second binding))))
         (when (next (rest binding))
-          (.write #^java.io.Writer *out* " ")
+          (.write ^java.io.Writer *out* " ")
           (pprint-newline :linear)
           (recur (next (rest binding))))))))
 
@@ -226,25 +226,25 @@
 ;;; Format something that looks like "if"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def #^{:private true} pprint-if (formatter-out "~:<~1I~w~^ ~@_~w~@{ ~_~w~}~:>"))
+(def ^{:private true} pprint-if (formatter-out "~:<~1I~w~^ ~@_~w~@{ ~_~w~}~:>"))
 
 (defn- pprint-cond [alis]
   (pprint-logical-block :prefix "(" :suffix ")"
     (pprint-indent :block 1)
     (write-out (first alis))
     (when (next alis)
-      (.write #^java.io.Writer *out* " ")
+      (.write ^java.io.Writer *out* " ")
       (pprint-newline :linear)
      (loop [alis (next alis)]
        (when alis
          (pprint-logical-block alis
           (write-out (first alis))
           (when (next alis)
-            (.write #^java.io.Writer *out* " ")
+            (.write ^java.io.Writer *out* " ")
             (pprint-newline :miser)
             (write-out (second alis))))
          (when (next (rest alis))
-           (.write #^java.io.Writer *out* " ")
+           (.write ^java.io.Writer *out* " ")
            (pprint-newline :linear)
            (recur (next (rest alis)))))))))
 
@@ -258,17 +258,17 @@
           (pprint-logical-block alis
             (write-out (first alis))
             (when (next alis)
-              (.write #^java.io.Writer *out* " ")
+              (.write ^java.io.Writer *out* " ")
               (pprint-newline :miser)
               (write-out (second alis))))
           (when (next (rest alis))
-            (.write #^java.io.Writer *out* " ")
+            (.write ^java.io.Writer *out* " ")
             (pprint-newline :linear)
             (recur (next (rest alis)))))))
     (pprint-simple-code-list alis)))
 
 ;;; The map of symbols that are defined in an enclosing #() anonymous function
-(def #^{:private true} *symbol-map* {})
+(def ^{:private true} *symbol-map* {})
 
 (defn- pprint-anon-func [alis]
   (let [args (second alis)
@@ -299,7 +299,7 @@
       (when alis
 	(write-out (first alis))
 	(when (next alis)
-	  (.write #^java.io.Writer *out* " ")
+	  (.write ^java.io.Writer *out* " ")
 	  (pprint-newline :linear)
 	  (recur (next alis)))))))
 
@@ -321,7 +321,7 @@
                     %))
                amap))))
 
-(def #^{:private true} *code-table*
+(def ^{:private true} *code-table*
      (two-forms
       (add-core-ns
        {'def pprint-hold-first, 'defonce pprint-hold-first, 
@@ -411,7 +411,7 @@
                (add-to-buffer this (make-buffer-blob s white-space))))
 
            Integer
-           (let [c #^Character x]
+           (let [c ^Character x]
              (if (= (getf :mode) :writing)
                (do 
                  (write-white-space this)

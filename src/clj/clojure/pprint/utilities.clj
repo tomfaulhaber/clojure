@@ -97,7 +97,7 @@ beginning of aseq"
   (binding [*out* *err*]
     (apply println args)))
        
-(defmacro #^{:private true} prlabel [prefix arg & more-args]
+(defmacro ^{:private true} prlabel [prefix arg & more-args]
   "Print args to *err* in name = value format"
   `(prerr ~@(cons (list 'quote prefix) (mapcat #(list (list 'quote %) "=" %) 
                                                   (cons arg (seq more-args))))))
