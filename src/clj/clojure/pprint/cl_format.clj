@@ -52,7 +52,8 @@ http://www.cs.cmu.edu/afs/cs.cmu.edu/project/ai-repository/ai/html/cltl/clm/node
 and in the Common Lisp HyperSpec at 
 http://www.lispworks.com/documentation/HyperSpec/Body/22_c.htm
 "
-  {:see-also [["http://www.cs.cmu.edu/afs/cs.cmu.edu/project/ai-repository/ai/html/cltl/clm/node200.html#SECTION002633000000000000000" 
+  {:added "1.2",
+   :see-also [["http://www.cs.cmu.edu/afs/cs.cmu.edu/project/ai-repository/ai/html/cltl/clm/node200.html#SECTION002633000000000000000" 
                "Common Lisp the Language"]
               ["http://www.lispworks.com/documentation/HyperSpec/Body/22_c.htm"
                "Common Lisp HyperSpec"]]}
@@ -1172,6 +1173,7 @@ It prints a table of squares and cubes for the numbers from 1 to 10:
        8     64     512    
        9     81     729    
       10    100    1000"
+  {:added "1.2"}
   [writer]
   (if (pretty-writer? writer) 
     writer
@@ -1183,7 +1185,8 @@ It prints a table of squares and cubes for the numbers from 1 to 10:
 
 (defn fresh-line
   "Make a newline if *out* is not already at the beginning of the line. If *out* is
-not a pretty writer (which keps track of columns), this function always output a newline."
+not a pretty writer (which keeps track of columns), this function always outputs a newline."
+  {:added "1.2"}
   []
   (if (instance? clojure.lang.IDeref *out*)
     (if (not (= 0 (get-column (:base @@*out*))))
@@ -1856,6 +1859,7 @@ fn [stream & args] ... and returns nil unless the stream is nil (meaning
 output to a string) in which case it returns the resulting string.
 
 format-in can be either a control string or a previously compiled format."
+  {:added "1.2"}
   [format-in]
   `(let [format-in# ~format-in
          my-c-c# (var-get (get (ns-interns (the-ns 'clojure.pprint))
@@ -1876,6 +1880,7 @@ designed to be used with *out* set to an appropriate Writer. In particular,
 this is meant to be used as part of a pretty printer dispatch method.
 
 format-in can be either a control string or a previously compiled format."
+  {:added "1.2"}
   [format-in]
   `(let [format-in# ~format-in
          my-c-c# (var-get (get (ns-interns (the-ns 'clojure.pprint))

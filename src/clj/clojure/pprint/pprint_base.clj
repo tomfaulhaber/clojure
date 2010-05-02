@@ -27,56 +27,65 @@
 
 
 (def
- ^{ :doc "Bind to true if you want write to use pretty printing"}
+ ^{:doc "Bind to true if you want write to use pretty printing", :added "1.2"}
  *print-pretty* true)
 
 (defonce ; If folks have added stuff here, don't overwrite
- ^{ :doc "The pretty print dispatch function. Use with-pprint-dispatch or set-pprint-dispatch
-to modify."}
+ ^{:doc "The pretty print dispatch function. Use with-pprint-dispatch or set-pprint-dispatch
+to modify.",
+   :added "1.2"}
  *print-pprint-dispatch* nil)
 
 (def
- ^{ :doc "Pretty printing will try to avoid anything going beyond this column.
+ ^{:doc "Pretty printing will try to avoid anything going beyond this column.
 Set it to nil to have pprint let the line be arbitrarily long. This will ignore all 
-non-mandatory newlines."}
+non-mandatory newlines.",
+   :added "1.2"}
  *print-right-margin* 72)
 
 (def
- ^{ :doc "The column at which to enter miser style. Depending on the dispatch table, 
+ ^{:doc "The column at which to enter miser style. Depending on the dispatch table, 
 miser style add newlines in more places to try to keep lines short allowing for further 
-levels of nesting."}
+levels of nesting.",
+   :added "1.2"}
  *print-miser-width* 40)
 
 ;;; TODO implement output limiting
 (def
- ^{ :private true :doc "Maximum number of lines to print in a pretty print instance (N.B. This is not yet used)"}
+ ^{:private true,
+   :doc "Maximum number of lines to print in a pretty print instance (N.B. This is not yet used)"}
  *print-lines* nil)
 
 ;;; TODO: implement circle and shared
 (def
- ^{ :private true :doc "Mark circular structures (N.B. This is not yet used)"}
+ ^{:private true,
+   :doc "Mark circular structures (N.B. This is not yet used)"}
  *print-circle* nil)
 
 ;;; TODO: should we just use *print-dup* here?
 (def
- ^{ :private true :doc "Mark repeated structures rather than repeat them (N.B. This is not yet used)"}
+ ^{:private true,
+   :doc "Mark repeated structures rather than repeat them (N.B. This is not yet used)"}
  *print-shared* nil)
 
 (def
- ^{ :doc "Don't print namespaces with symbols. This is particularly useful when 
-pretty printing the results of macro expansions"}
+ ^{:doc "Don't print namespaces with symbols. This is particularly useful when 
+pretty printing the results of macro expansions"
+   :added "1.2"}
  *print-suppress-namespaces* nil)
 
 ;;; TODO: support print-base and print-radix in cl-format
 ;;; TODO: support print-base and print-radix in rationals
 (def
- ^{ :doc "Print a radix specifier in front of integers and rationals. If *print-base* is 2, 8, 
+ ^{:doc "Print a radix specifier in front of integers and rationals. If *print-base* is 2, 8, 
 or 16, then the radix specifier used is #b, #o, or #x, respectively. Otherwise the 
-radix specifier is in the form #XXr where XX is the decimal value of *print-base* "}
+radix specifier is in the form #XXr where XX is the decimal value of *print-base* "
+   :added "1.2"}
  *print-radix* nil)
 
 (def
- ^{ :doc "The base to use for printing integers and rationals."}
+ ^{:doc "The base to use for printing integers and rationals."
+   :added "1.2"}
  *print-base* 10)
 
 
@@ -169,6 +178,7 @@ of the caller.
 This method is primarily intended for use by pretty print dispatch functions that 
 already know that the pretty printer will have set up their environment appropriately.
 Normal library clients should use the standard \"write\" interface. "
+  {:added "1.2"}
   [object]
   (let [length-reached (and 
                         *current-length*
@@ -206,6 +216,7 @@ The following keyword arguments can be passed with values:
 
   * = not yet supported
 "
+  {:added "1.2"}
   [object & kw-args]
   (let [options (merge {:stream true} (apply hash-map kw-args))]
     (binding-map (table-ize write-option-table options) 
@@ -229,6 +240,7 @@ The following keyword arguments can be passed with values:
 (defn pprint 
   "Pretty print object to the optional output writer. If the writer is not provided, 
 print the object to the currently bound value of *out*."
+  {:added "1.2"}
   ([object] (pprint object *out*)) 
   ([object writer]
      (with-pretty-writer writer
@@ -241,6 +253,7 @@ print the object to the currently bound value of *out*."
 (defmacro pp 
   "A convenience macro that pretty prints the last thing output. This is
 exactly equivalent to (pprint *1)."
+  {:added "1.2"}
   [] `(pprint *1))
 
 (defn set-pprint-dispatch  
@@ -248,8 +261,9 @@ exactly equivalent to (pprint *1)."
 where obj is the object to pretty print. That function will be called with *out* set
 to a pretty printing writer to which it should do its printing.
 
-For example functions, see *simple-dispatch* and *code-dispatch* in 
+For example functions, see simple-dispatch and code-dispatch in 
 clojure.pprint.dispatch.clj."
+  {:added "1.2"}
   [function]
   (let [old-meta (meta #'*print-pprint-dispatch*)]
     (alter-var-root #'*print-pprint-dispatch* (constantly function))
@@ -258,6 +272,7 @@ clojure.pprint.dispatch.clj."
 
 (defmacro with-pprint-dispatch 
   "Execute body with the pretty print dispatch function bound to function."
+  {:added "1.2"}
   [function & body]
   `(binding [*print-pprint-dispatch* ~function]
      ~@body))
@@ -288,9 +303,11 @@ clojure.pprint.dispatch.clj."
 must be a pretty printing writer. When used from pprint or cl-format, this can be 
 assumed. 
 
+This function is intended for use when writing custom dispatch functions.
+
 Before the body, the caller can optionally specify options: :prefix, :per-line-prefix, 
 and :suffix."
-  {:arglists '[[options* body]]}
+  {:added "1.2", :arglists '[[options* body]]}
   [& args]
   (let [[options body] (parse-lb-options #{:prefix :per-line-prefix :suffix} args)]
     `(do (if (level-exceeded) 
@@ -307,7 +324,10 @@ and :suffix."
   "Print a conditional newline to a pretty printing stream. kind specifies if the 
 newline is :linear, :miser, :fill, or :mandatory. 
 
+This function is intended for use when writing custom dispatch functions.
+
 Output is sent to *out* which must be a pretty printing writer."
+  {:added "1.2"}
   [kind] 
   (check-enumerated-arg kind #{:linear :miser :fill :mandatory})
   (nl *out* kind))
@@ -318,7 +338,10 @@ following lines are indented. relative-to can be either :block or :current depen
 whether the indent should be computed relative to the start of the logical block or
 the current column position. n is an offset. 
 
+This function is intended for use when writing custom dispatch functions.
+
 Output is sent to *out* which must be a pretty printing writer."
+  {:added "1.2"}
   [relative-to n] 
   (check-enumerated-arg relative-to #{:block :current})
   (indent *out* relative-to n))
@@ -331,9 +354,12 @@ is :line, :section, :line-relative, or :section-relative.
 Colnum and colinc specify the target column and the increment to move the target
 forward if the output is already past the original target.
 
+This function is intended for use when writing custom dispatch functions.
+
 Output is sent to *out* which must be a pretty printing writer.
 
 THIS FUNCTION IS NOT YET IMPLEMENTED."
+  {:added "1.2"}
   [kind colnum colinc] 
   (check-enumerated-arg kind #{:line :section :line-relative :section-relative})
   (throw (UnsupportedOperationException. "pprint-tab is not yet implemented")))

@@ -123,20 +123,20 @@
 
 
 (defmulti 
-  *simple-dispatch*
+  simple-dispatch
   "The pretty print dispatch function for simple data structure format."
-  {:arglists '[[object]]} 
+  {:added "1.2" :arglists '[[object]]} 
   class)
 
-(use-method *simple-dispatch* clojure.lang.ISeq pprint-list)
-(use-method *simple-dispatch* clojure.lang.IPersistentVector pprint-vector)
-(use-method *simple-dispatch* clojure.lang.IPersistentMap pprint-map)
-(use-method *simple-dispatch* clojure.lang.IPersistentSet pprint-set)
-(use-method *simple-dispatch* clojure.lang.Ref pprint-ref)
-(use-method *simple-dispatch* clojure.lang.Atom pprint-atom)
-(use-method *simple-dispatch* clojure.lang.Agent pprint-agent)
-(use-method *simple-dispatch* nil pr)
-(use-method *simple-dispatch* :default pprint-simple-default)
+(use-method simple-dispatch clojure.lang.ISeq pprint-list)
+(use-method simple-dispatch clojure.lang.IPersistentVector pprint-vector)
+(use-method simple-dispatch clojure.lang.IPersistentMap pprint-map)
+(use-method simple-dispatch clojure.lang.IPersistentSet pprint-set)
+(use-method simple-dispatch clojure.lang.Ref pprint-ref)
+(use-method simple-dispatch clojure.lang.Atom pprint-atom)
+(use-method simple-dispatch clojure.lang.Agent pprint-agent)
+(use-method simple-dispatch nil pr)
+(use-method simple-dispatch :default pprint-simple-default)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Dispatch for the code table
@@ -352,31 +352,31 @@
       (pr sym))))
 
 (defmulti 
-  *code-dispatch*
+  code-dispatch
   "The pretty print dispatch function for pretty printing Clojure code."
-  {:arglists '[[object]]} 
+  {:added "1.2" :arglists '[[object]]} 
   class)
 
-(use-method *code-dispatch* clojure.lang.ISeq pprint-code-list)
-(use-method *code-dispatch* clojure.lang.Symbol pprint-code-symbol)
+(use-method code-dispatch clojure.lang.ISeq pprint-code-list)
+(use-method code-dispatch clojure.lang.Symbol pprint-code-symbol)
 
-;; The following are all exact copies of *simple-dispatch*
-(use-method *code-dispatch* clojure.lang.IPersistentVector pprint-vector)
-(use-method *code-dispatch* clojure.lang.IPersistentMap pprint-map)
-(use-method *code-dispatch* clojure.lang.IPersistentSet pprint-set)
-(use-method *code-dispatch* clojure.lang.Ref pprint-ref)
-(use-method *code-dispatch* clojure.lang.Atom pprint-atom)
-(use-method *code-dispatch* clojure.lang.Agent pprint-agent)
-(use-method *code-dispatch* nil pr)
-(use-method *code-dispatch* :default pprint-simple-default)
+;; The following are all exact copies of simple-dispatch
+(use-method code-dispatch clojure.lang.IPersistentVector pprint-vector)
+(use-method code-dispatch clojure.lang.IPersistentMap pprint-map)
+(use-method code-dispatch clojure.lang.IPersistentSet pprint-set)
+(use-method code-dispatch clojure.lang.Ref pprint-ref)
+(use-method code-dispatch clojure.lang.Atom pprint-atom)
+(use-method code-dispatch clojure.lang.Agent pprint-agent)
+(use-method code-dispatch nil pr)
+(use-method code-dispatch :default pprint-simple-default)
 
-(set-pprint-dispatch *simple-dispatch*)
+(set-pprint-dispatch simple-dispatch)
 
 
 ;;; For testing
 (comment
 
-(with-pprint-dispatch *code-dispatch* 
+(with-pprint-dispatch code-dispatch 
   (pprint 
    '(defn cl-format 
       "An implementation of a Common Lisp compatible format function"
@@ -385,7 +385,7 @@
             navigator (init-navigator args)]
         (execute-format stream compiled-format navigator)))))
 
-(with-pprint-dispatch *code-dispatch* 
+(with-pprint-dispatch code-dispatch 
   (pprint 
    '(defn cl-format 
       [stream format-in & args]
@@ -393,7 +393,7 @@
             navigator (init-navigator args)]
         (execute-format stream compiled-format navigator)))))
 
-(with-pprint-dispatch *code-dispatch* 
+(with-pprint-dispatch code-dispatch 
   (pprint
    '(defn- -write 
       ([this x]
@@ -420,7 +420,7 @@
                  (write-initial-lines this "\n")
                  (add-to-buffer this (make-buffer-blob (str (char c)) nil))))))))))
 
-(with-pprint-dispatch *code-dispatch* 
+(with-pprint-dispatch code-dispatch 
   (pprint 
    '(defn pprint-defn [writer alis]
       (if (next alis) 
