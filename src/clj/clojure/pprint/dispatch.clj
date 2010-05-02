@@ -16,7 +16,7 @@
 
 (in-ns 'clojure.pprint)
 
-(defn use-method
+(defn- use-method
   "Installs a function as a new method of multimethod associated with dispatch-value. "
   [multifn dispatch-val func]
   (. multifn addMethod dispatch-val func))
@@ -41,11 +41,11 @@
 ;;; or directly by printing the objects using Clojure's built-in print functions (like
 ;;; :keyword, \char, or ""). The notable exception is #() which is special-cased.
 
-(def reader-macros
+(def #^{:private true} reader-macros
      {'quote "'", 'clojure.core/deref "@", 
       'var "#'", 'clojure.core/unquote "~"})
 
-(defn pprint-reader-macro [alis]
+(defn- pprint-reader-macro [alis]
   (let [#^String macro-char (reader-macros (first alis))]
     (when (and macro-char (= 2 (count alis)))
       (.write #^java.io.Writer *out* macro-char)
@@ -62,7 +62,7 @@
 ;;; la Common Lisp)
 
 ;;; (def pprint-simple-list (formatter-out "~:<~@{~w~^ ~_~}~:>"))
-(defn pprint-simple-list [alis]
+(defn- pprint-simple-list [alis]
   (pprint-logical-block :prefix "(" :suffix ")"
     (loop [alis (seq alis)]
       (when alis
@@ -72,12 +72,12 @@
 	  (pprint-newline :linear)
 	  (recur (next alis)))))))
 
-(defn pprint-list [alis]
+(defn- pprint-list [alis]
   (if-not (pprint-reader-macro alis)
     (pprint-simple-list alis)))
 
 ;;; (def pprint-vector (formatter-out "~<[~;~@{~w~^ ~_~}~;]~:>"))
-(defn pprint-vector [avec]
+(defn- pprint-vector [avec]
   (pprint-logical-block :prefix "[" :suffix "]"
     (loop [aseq (seq avec)]
       (when aseq
@@ -90,7 +90,7 @@
 (def pprint-array (formatter-out "~<[~;~@{~w~^, ~:_~}~;]~:>"))
 
 ;;; (def pprint-map (formatter-out "~<{~;~@{~<~w~^ ~_~w~:>~^, ~_~}~;}~:>"))
-(defn pprint-map [amap]
+(defn- pprint-map [amap]
   (pprint-logical-block :prefix "{" :suffix "}"
     (loop [aseq (seq amap)]
       (when aseq
@@ -104,18 +104,18 @@
           (pprint-newline :linear)
           (recur (next aseq)))))))
 
-(def pprint-set (formatter-out "~<#{~;~@{~w~^ ~:_~}~;}~:>"))
-(defn pprint-ref [ref]
+(def #^{:private true} pprint-set (formatter-out "~<#{~;~@{~w~^ ~:_~}~;}~:>"))
+(defn- pprint-ref [ref]
   (pprint-logical-block  :prefix "#<Ref " :suffix ">"
     (write-out @ref)))
-(defn pprint-atom [ref]
+(defn- pprint-atom [ref]
   (pprint-logical-block :prefix "#<Atom " :suffix ">"
     (write-out @ref)))
-(defn pprint-agent [ref]
+(defn- pprint-agent [ref]
   (pprint-logical-block :prefix "#<Agent " :suffix ">"
     (write-out @ref)))
 
-(defn pprint-simple-default [obj]
+(defn- pprint-simple-default [obj]
   (cond 
     (.isArray (class obj)) (pprint-array obj)
     (and *print-suppress-namespaces* (symbol? obj)) (print (name obj))
@@ -149,7 +149,7 @@
 ;;; won't give it to us now).
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def pprint-hold-first (formatter-out "~:<~w~^ ~@_~w~^ ~_~@{~w~^ ~_~}~:>"))
+(def #^{:private true} pprint-hold-first (formatter-out "~:<~w~^ ~@_~w~^ ~_~@{~w~^ ~_~}~:>"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Format something that looks like a defn or defmacro
@@ -171,7 +171,7 @@
 
 ;;; TODO: figure out how to support capturing metadata in defns (we might need a 
 ;;; special reader)
-(defn pprint-defn [alis]
+(defn- pprint-defn [alis]
   (if (next alis) 
     (let [[defn-sym defn-name & stuff] alis
           [doc-str stuff] (if (string? (first stuff))
@@ -196,7 +196,7 @@
 ;;; Format something with a binding form
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn pprint-binding-form [binding-vec]
+(defn- pprint-binding-form [binding-vec]
   (pprint-logical-block :prefix "[" :suffix "]"
     (loop [binding binding-vec]
       (when (seq binding)
@@ -211,7 +211,7 @@
           (pprint-newline :linear)
           (recur (next (rest binding))))))))
 
-(defn pprint-let [alis]
+(defn- pprint-let [alis]
   (let [base-sym (first alis)]
     (pprint-logical-block :prefix "(" :suffix ")"
       (if (and (next alis) (vector? (second alis)))
@@ -226,9 +226,9 @@
 ;;; Format something that looks like "if"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def pprint-if (formatter-out "~:<~1I~w~^ ~@_~w~@{ ~_~w~}~:>"))
+(def #^{:private true} pprint-if (formatter-out "~:<~1I~w~^ ~@_~w~@{ ~_~w~}~:>"))
 
-(defn pprint-cond [alis]
+(defn- pprint-cond [alis]
   (pprint-logical-block :prefix "(" :suffix ")"
     (pprint-indent :block 1)
     (write-out (first alis))
@@ -248,7 +248,7 @@
            (pprint-newline :linear)
            (recur (next (rest alis)))))))))
 
-(defn pprint-condp [alis]
+(defn- pprint-condp [alis]
   (if (> (count alis) 3) 
     (pprint-logical-block :prefix "(" :suffix ")"
       (pprint-indent :block 1)
@@ -268,9 +268,9 @@
     (pprint-simple-code-list alis)))
 
 ;;; The map of symbols that are defined in an enclosing #() anonymous function
-(def *symbol-map* {})
+(def #^{:private true} *symbol-map* {})
 
-(defn pprint-anon-func [alis]
+(defn- pprint-anon-func [alis]
   (let [args (second alis)
         nlis (first (rest (rest alis)))]
     (if (vector? args)
@@ -292,7 +292,7 @@
 ;;; This is the equivalent of (formatter-out "~:<~1I~@{~w~^ ~_~}~:>"), but is
 ;;; easier on the stack.
 
-(defn pprint-simple-code-list [alis]
+(defn- pprint-simple-code-list [alis]
   (pprint-logical-block :prefix "(" :suffix ")"
     (pprint-indent :block 1)
     (loop [alis (seq alis)]
@@ -305,14 +305,14 @@
 
 ;;; Take a map with symbols as keys and add versions with no namespace.
 ;;; That is, if ns/sym->val is in the map, add sym->val to the result.
-(defn two-forms [amap]
+(defn- two-forms [amap]
   (into {} 
         (mapcat 
          identity 
          (for [x amap] 
            [x [(symbol (name (first x))) (second x)]]))))
 
-(defn add-core-ns [amap]
+(defn- add-core-ns [amap]
   (let [core "clojure.core"]
     (into {}
           (map #(let [[s f] %] 
@@ -321,7 +321,7 @@
                     %))
                amap))))
 
-(def *code-table*
+(def #^{:private true} *code-table*
      (two-forms
       (add-core-ns
        {'def pprint-hold-first, 'defonce pprint-hold-first, 
@@ -338,13 +338,13 @@
         'struct-map pprint-hold-first, 
         })))
 
-(defn pprint-code-list [alis]
+(defn- pprint-code-list [alis]
   (if-not (pprint-reader-macro alis) 
     (if-let [special-form (*code-table* (first alis))]
       (special-form alis)
       (pprint-simple-code-list alis))))
 
-(defn pprint-code-symbol [sym] 
+(defn- pprint-code-symbol [sym] 
   (if-let [arg-num (sym *symbol-map*)]
     (print arg-num)
     (if *print-suppress-namespaces* 

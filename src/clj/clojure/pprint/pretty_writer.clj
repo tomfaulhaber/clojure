@@ -50,6 +50,7 @@
   (let [name-str (name type-name)]
     `(do
        (defstruct ~type-name :type-tag ~@fields)
+       (alter-meta! #'~type-name assoc :private true)
        (defn- ~(symbol (str "make-" name-str)) 
          [& vals#] (apply struct ~type-name ~(keyword name-str) vals#))
        (defn- ~(symbol (str name-str "?")) [x#] (= (:type-tag x#) ~(keyword name-str))))))
@@ -64,7 +65,7 @@
            :prefix :per-line-prefix :suffix
            :logical-block-callback)
 
-(defn ancestor? [parent child]
+(defn- ancestor? [parent child]
   (loop [child (:parent child)]
     (cond 
      (nil? child) false
@@ -73,7 +74,7 @@
 
 (defstruct #^{:private true} section :parent)
 
-(defn buffer-length [l] 
+(defn- buffer-length [l] 
   (let [l (seq l)]
     (if l 
       (- (:end-pos (last l)) (:start-pos (first l)))
@@ -97,7 +98,7 @@
 
 (declare emit-nl)
 
-(defmulti write-token #(:type-tag %2))
+(defmulti #^{:private true} write-token #(:type-tag %2))
 (defmethod write-token :start-block-t [#^Writer this token]
    (when-let [cb (getf :logical-block-callback)] (cb :start))
    (let [lb (:logical-block token)]
@@ -172,7 +173,7 @@
          (>= @(:start-col lb) (- maxcol miser-width))
          (linear-nl? this lb section))))
 
-(defmulti emit-nl? (fn [t _ _ _] (:type t)))
+(defmulti #^{:private true} emit-nl? (fn [t _ _ _] (:type t)))
 
 (defmethod emit-nl? :linear [newl this section _]
   (let [lb (:logical-block newl)]
@@ -221,7 +222,7 @@
            (ref-set (:intra-block-nl lb) true)
            (recur (:parent lb)))))))
 
-(defn emit-nl [#^Writer this nl]
+(defn- emit-nl [#^Writer this nl]
   (.write (getf :base) (int \newline))
   (dosync (setf :trailing-white-space nil))
   (let [lb (:logical-block nl)
@@ -239,7 +240,7 @@
 
 ;;; Methods for showing token strings for debugging
 
-(defmulti tok :type-tag)
+(defmulti #^{:private true} tok :type-tag)
 (defmethod tok :nl-t [token]
   (:type token))
 (defmethod tok :buffer-blob [token]
@@ -336,7 +337,7 @@
          (last lines))))))
 
 
-(defn write-white-space [#^Writer this]
+(defn- write-white-space [#^Writer this]
   (if-let [#^String tws (getf :trailing-white-space)]
     (dosync
      (.write (getf :base) tws)
@@ -415,7 +416,7 @@
 ;;; Methods for pretty-writer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn start-block 
+(defn- start-block 
   [#^Writer this 
    #^String prefix #^String per-line-prefix #^String suffix]
   (dosync 
@@ -437,7 +438,7 @@
          (setf :pos newpos)
          (add-to-buffer this (make-start-block-t lb oldpos newpos)))))))
 
-(defn end-block [#^Writer this]
+(defn- end-block [#^Writer this]
   (dosync
    (let [lb (getf :logical-blocks)
          #^String suffix (:suffix lb)]
@@ -453,13 +454,13 @@
          (add-to-buffer this (make-end-block-t lb oldpos newpos))))
      (setf :logical-blocks (:parent lb)))))
 
-(defn nl [#^Writer this type]
+(defn- nl [#^Writer this type]
   (dosync 
    (setf :mode :buffering)
    (let [pos (getf :pos)]
      (add-to-buffer this (make-nl-t type (getf :logical-blocks) pos pos)))))
 
-(defn indent [#^Writer this relative-to offset]
+(defn- indent [#^Writer this relative-to offset]
   (dosync 
    (let [lb (getf :logical-blocks)]
      (if (= (getf :mode) :writing)
@@ -472,11 +473,11 @@
        (let [pos (getf :pos)]
          (add-to-buffer this (make-indent-t lb relative-to offset pos pos)))))))
 
-(defn get-miser-width [#^Writer this]
+(defn- get-miser-width [#^Writer this]
   (getf :miser-width))
 
-(defn set-miser-width [#^Writer this new-miser-width]
+(defn- set-miser-width [#^Writer this new-miser-width]
   (dosync (setf :miser-width new-miser-width)))
 
-(defn set-logical-block-callback [#^Writer this f]
+(defn- set-logical-block-callback [#^Writer this f]
   (dosync (setf :logical-block-callback f)))

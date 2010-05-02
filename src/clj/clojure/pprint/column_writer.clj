@@ -19,7 +19,7 @@
 (import [clojure.lang IDeref]
         [java.io Writer])
 
-(def *default-page-width* 72)
+(def #^{:private true} *default-page-width* 72)
 
 (defn- get-field [#^Writer this sym]
   (sym @@this))
@@ -27,20 +27,20 @@
 (defn- set-field [#^Writer this sym new-val] 
   (alter @this assoc sym new-val))
 
-(defn get-column [this]
+(defn- get-column [this]
   (get-field this :cur))
 
-(defn get-line [this]
+(defn- get-line [this]
   (get-field this :line))
 
-(defn get-max-column [this]
+(defn- get-max-column [this]
   (get-field this :max))
 
-(defn set-max-column [this new-max]
+(defn- set-max-column [this new-max]
   (dosync (set-field this :max new-max))
   nil)
 
-(defn get-writer [this]
+(defn- get-writer [this]
   (get-field this :base))
 
 (defn- c-write-char [#^Writer this #^Integer c]
@@ -51,7 +51,7 @@
 	    (set-field this :cur (inc (get-field this :cur)))))
   (.write #^Writer (get-field this :base) c))
 
-(defn column-writer   
+(defn- column-writer   
   ([writer] (column-writer writer *default-page-width*))
   ([writer max-columns]
      (let [fields (ref {:max max-columns, :cur 0, :line 0 :base writer})]

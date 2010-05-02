@@ -23,7 +23,7 @@
 ;;; These functions are actually pretty general.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn map-passing-context [func initial-context lis]
+(defn- map-passing-context [func initial-context lis]
   (loop [context initial-context
          lis lis
          acc []]
@@ -34,7 +34,7 @@
           [result new-context] (apply func [this context])]
       (recur new-context remainder (conj acc result))))))
 
-(defn consume [func initial-context]
+(defn- consume [func initial-context]
   (loop [context initial-context
          acc []]
     (let [[result new-context] (apply func [context])]
@@ -42,7 +42,7 @@
         [acc new-context]
       (recur new-context (conj acc result))))))
 
-(defn consume-while [func initial-context]
+(defn- consume-while [func initial-context]
   (loop [context initial-context
          acc []]
     (let [[result continue new-context] (apply func [context])]
@@ -50,18 +50,18 @@
         [acc context]
       (recur new-context (conj acc result))))))
 
-(defn unzip-map [m]
+(defn- unzip-map [m]
   "Take a  map that has pairs in the value slots and produce a pair of maps, 
    the first having all the first elements of the pairs and the second all 
    the second elements of the pairs"
   [(into {} (for [[k [v1 v2]] m] [k v1]))
    (into {} (for [[k [v1 v2]] m] [k v2]))])
 
-(defn tuple-map [m v1]
+(defn- tuple-map [m v1]
   "For all the values, v, in the map, replace them with [v v1]"
   (into {} (for [[k v] m] [k [v v1]])))
 
-(defn rtrim [s c]
+(defn- rtrim [s c]
   "Trim all instances of c from the end of sequence s"
   (let [len (count s)]
     (if (and (pos? len) (= (nth s (dec (count s))) c))
@@ -72,7 +72,7 @@
          true (recur (dec n))))
       s)))
 
-(defn ltrim [s c]
+(defn- ltrim [s c]
   "Trim all instances of c from the beginning of sequence s"
   (let [len (count s)]
     (if (and (pos? len) (= (nth s 0) c))
@@ -82,7 +82,7 @@
           (recur (inc n))))
       s)))
 
-(defn prefix-count [aseq val]
+(defn- prefix-count [aseq val]
   "Return the number of times that val occurs at the start of sequence aseq, 
 if val is a seq itself, count the number of times any element of val occurs at the
 beginning of aseq"
@@ -92,12 +92,12 @@ beginning of aseq"
        pos
        (recur (inc pos))))))
 
-(defn prerr [& args]
+(defn- prerr [& args]
   "Println to *err*"
   (binding [*out* *err*]
     (apply println args)))
        
-(defmacro prlabel [prefix arg & more-args]
+(defmacro #^{:private true} prlabel [prefix arg & more-args]
   "Print args to *err* in name = value format"
   `(prerr ~@(cons (list 'quote prefix) (mapcat #(list (list 'quote %) "=" %) 
                                                   (cons arg (seq more-args))))))
