@@ -15,14 +15,10 @@
 ;; This module implements a wrapper around a java.io.Writer which implements the
 ;; core of the XP algorithm.
 
-(ns clojure.pprint.pretty-writer
-  (:refer-clojure :exclude (deftype))
-  (:use clojure.pprint.utilities)
-  (:use [clojure.pprint.column-writer
-         :only (column-writer get-column get-max-column)])
-  (:import
-   [clojure.lang IDeref]
-   [java.io Writer]))
+(in-ns 'clojure.pprint)
+
+(import [clojure.lang IDeref]
+        [java.io Writer])
 
 ;; TODO: Support for tab directives
 

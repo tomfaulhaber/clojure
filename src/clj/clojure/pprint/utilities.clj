@@ -15,7 +15,7 @@
 ;; printing. The functions here could go in a more general purpose library,
 ;; perhaps.
 
-(ns clojure.pprint.utilities)
+(in-ns 'clojure.pprint)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Helper functions for digesting formats in the various

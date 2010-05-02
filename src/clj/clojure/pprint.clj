@@ -24,11 +24,12 @@ See documentation for those functions for more information or complete
 documentation on the the clojure web site on github.",
        }
     clojure.pprint
-  (:use clojure.pprint.utilities)
-  (:use clojure.pprint.pretty-writer
-        clojure.pprint.column-writer))
+    (:refer-clojure :exclude (deftype)))
 
 
+(load "pprint/utilities")
+(load "pprint/column_writer")
+(load "pprint/pretty_writer")
 (load "pprint/pprint_base")
 (load "pprint/cl_format")
 (load "pprint/dispatch")

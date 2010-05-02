@@ -105,9 +105,6 @@
       <arg value="clojure.test.tap"/>
       <arg value="clojure.test.junit"/>
       <arg value="clojure.pprint"/>
-      <arg value="clojure.pprint.column-writer"/>
-      <arg value="clojure.pprint.pretty-writer"/>
-      <arg value="clojure.pprint.utilities"/>
     </java>
   </target>
 

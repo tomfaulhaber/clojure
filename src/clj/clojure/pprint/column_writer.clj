@@ -14,10 +14,10 @@
 
 ;; This module implements a column-aware wrapper around an instance of java.io.Writer
 
-(ns clojure.pprint.column-writer
-  (:import
-   [clojure.lang IDeref]
-   [java.io Writer]))
+(in-ns 'clojure.pprint)
+
+(import [clojure.lang IDeref]
+        [java.io Writer])
 
 (def *default-page-width* 72)
 
