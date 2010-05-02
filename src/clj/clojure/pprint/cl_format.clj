@@ -1780,9 +1780,8 @@ column number or pretty printing"
         true
         (recur (next format))))))
 
-(defn execute-format 
-  "Executes the format with the arguments. This should never be used directly, but is public
-because the formatter macro uses it."
+(defn- execute-format 
+  "Executes the format with the arguments."
   {:skip-wiki true}
   ([stream format args]
      (let [#^java.io.Writer real-stream (cond 
@@ -1811,8 +1810,12 @@ because the formatter macro uses it."
                 params (assoc params :base-args args)]
             [nil (apply (:func element) [params args offsets])])))
       args
-      format)))
+      format)
+     nil))
 
+;;; This is a bad idea, but it prevents us from leaking private symbols
+;;; This should all be replaced by really compiled formats anyway.
+(def #^{:private true} cached-compile (memoize compile-format))
 
 (defmacro formatter
   "Makes a function which can directly run format-in. The function is
@@ -1821,12 +1824,15 @@ output to a string) in which case it returns the resulting string.
 
 format-in can be either a control string or a previously compiled format."
   [format-in]
-  (let [cf (gensym "compiled-format")]
-    `(let [format-in# ~format-in]
-       (do (defonce ~cf (if (string? format-in#) (compile-format format-in#) format-in#))
-           (fn [stream# & args#]
-             (let [navigator# (init-navigator args#)]
-               (execute-format stream# ~cf navigator#)))))))
+  `(let [format-in# ~format-in
+         my-c-c# (var-get (get (ns-interns (the-ns 'clojure.pprint))
+                               '~'cached-compile))
+         my-e-f# (var-get (get (ns-interns (the-ns 'clojure.pprint))
+                               '~'execute-format))
+         cf# (if (string? format-in#) (my-c-c# format-in#) format-in#)]
+     (fn [stream# & args#]
+       (let [navigator# (init-navigator args#)]
+         (my-e-f# stream# cf# navigator#)))))
 
 (defmacro formatter-out
   "Makes a function which can directly run format-in. The function is
@@ -1836,9 +1842,12 @@ this is meant to be used as part of a pretty printer dispatch method.
 
 format-in can be either a control string or a previously compiled format."
   [format-in]
-  (let [cf (gensym "compiled-format")]
-    `(let [format-in# ~format-in]
-       (do (defonce ~cf (if (string? format-in#) (compile-format format-in#) format-in#))
-           (fn [& args#]
-             (let [navigator# (init-navigator args#)]
-               (execute-format ~cf navigator#)))))))
+  `(let [format-in# ~format-in
+         my-c-c# (var-get (get (ns-interns (the-ns 'clojure.pprint))
+                               '~'cached-compile))
+         my-e-f# (var-get (get (ns-interns (the-ns 'clojure.pprint))
+                               '~'execute-format))
+         cf# (if (string? format-in#) (my-c-c# format-in#) format-in#)]
+     (fn [& args#]
+       (let [navigator# (init-navigator args#)]
+         (my-e-f# cf# navigator#)))))
