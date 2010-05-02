@@ -77,7 +77,7 @@ http://www.lispworks.com/documentation/HyperSpec/Body/22_c.htm
 (defstruct #^{:private true}
   arg-navigator :seq :rest :pos )
 
-(defn init-navigator 
+(defn- init-navigator 
   "Create a new arg-navigator from the sequence with the position set to 0"
   {:skip-wiki true}
   [s]
@@ -1140,7 +1140,39 @@ Note this should only be used for the last one in the sequence"
 ;;; If necessary, wrap the writer in a PrettyWriter object
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn get-pretty-writer [writer]
+(defn get-pretty-writer 
+  "Returns the java.io.Writer passed in wrapped in a pretty writer proxy, unless it's 
+already a pretty writer. Generally, it is unneccesary to call this function, since pprint,
+write, and cl-format all call it if they need to. However if you want the state to be 
+preserved across calls, you will want to wrap them with this. 
+
+For example, when you want to generate column-aware output with multiple calls to cl-format, 
+do it like in this example:
+
+    (defn print-table [aseq column-width]
+      (binding [*out* (get-pretty-writer *out*)]
+        (doseq [row aseq]
+          (doseq [col row]
+            (cl-format true \"~4D~7,vT\" col column-width))
+          (prn))))
+
+Now when you run:
+
+    user> (print-table (map #(vector % (* % %) (* % % %)) (range 1 11)) 8)
+
+It prints a table of squares and cubes for the numbers from 1 to 10:
+
+       1      1       1    
+       2      4       8    
+       3      9      27    
+       4     16      64    
+       5     25     125    
+       6     36     216    
+       7     49     343    
+       8     64     512    
+       9     81     729    
+      10    100    1000"
+  [writer]
   (if (pretty-writer? writer) 
     writer
     (pretty-writer writer *print-right-margin* *print-miser-width*)))
@@ -1746,7 +1778,7 @@ of parameters as well."
           [this remainder])))
     format)))
 
-(defn compile-format 
+(defn- compile-format 
   "Compiles format-str into a compiled format which can be used as an argument
 to cl-format just like a plain format string. Use this function for improved 
 performance when you're using the same format string repeatedly"
@@ -1829,9 +1861,11 @@ format-in can be either a control string or a previously compiled format."
                                '~'cached-compile))
          my-e-f# (var-get (get (ns-interns (the-ns 'clojure.pprint))
                                '~'execute-format))
+         my-i-n# (var-get (get (ns-interns (the-ns 'clojure.pprint))
+                               '~'init-navigator))
          cf# (if (string? format-in#) (my-c-c# format-in#) format-in#)]
      (fn [stream# & args#]
-       (let [navigator# (init-navigator args#)]
+       (let [navigator# (my-i-n# args#)]
          (my-e-f# stream# cf# navigator#)))))
 
 (defmacro formatter-out
@@ -1847,7 +1881,9 @@ format-in can be either a control string or a previously compiled format."
                                '~'cached-compile))
          my-e-f# (var-get (get (ns-interns (the-ns 'clojure.pprint))
                                '~'execute-format))
+         my-i-n# (var-get (get (ns-interns (the-ns 'clojure.pprint))
+                               '~'init-navigator))
          cf# (if (string? format-in#) (my-c-c# format-in#) format-in#)]
      (fn [& args#]
-       (let [navigator# (init-navigator args#)]
+       (let [navigator# (my-i-n# args#)]
          (my-e-f# cf# navigator#)))))

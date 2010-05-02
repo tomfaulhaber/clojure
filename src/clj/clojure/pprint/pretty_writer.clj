@@ -247,7 +247,7 @@
   (str \" (:data token) (:trailing-white-space token) \"))
 (defmethod tok :default [token]
   (:type-tag token))
-(defn toks [toks] (map tok toks))
+(defn- toks [toks] (map tok toks))
 
 ;;; write-token-string is called when the set of tokens in the buffer
 ;;; is longer than the available space on the line
@@ -362,7 +362,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defn pretty-writer [writer max-columns miser-width]
+(defn- pretty-writer [writer max-columns miser-width]
   (let [lb (struct logical-block nil nil (ref 0) (ref 0) (ref false) (ref false))
         fields (ref {:pretty-writer true
                      :base (column-writer writer max-columns)

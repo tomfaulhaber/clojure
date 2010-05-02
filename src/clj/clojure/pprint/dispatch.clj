@@ -87,7 +87,7 @@
 	  (pprint-newline :linear)
 	  (recur (next aseq)))))))
 
-(def pprint-array (formatter-out "~<[~;~@{~w~^, ~:_~}~;]~:>"))
+(def #^{:private true} pprint-array (formatter-out "~<[~;~@{~w~^, ~:_~}~;]~:>"))
 
 ;;; (def pprint-map (formatter-out "~<{~;~@{~<~w~^ ~_~w~:>~^, ~_~}~;}~:>"))
 (defn- pprint-map [amap]

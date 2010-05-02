@@ -49,17 +49,17 @@ levels of nesting."}
 
 ;;; TODO implement output limiting
 (def
- #^{ :doc "Maximum number of lines to print in a pretty print instance (N.B. This is not yet used)"}
+ #^{ :private true :doc "Maximum number of lines to print in a pretty print instance (N.B. This is not yet used)"}
  *print-lines* nil)
 
 ;;; TODO: implement circle and shared
 (def
- #^{ :doc "Mark circular structures (N.B. This is not yet used)"}
+ #^{ :private true :doc "Mark circular structures (N.B. This is not yet used)"}
  *print-circle* nil)
 
 ;;; TODO: should we just use *print-dup* here?
 (def
- #^{ :doc "Mark repeated structures rather than repeat them (N.B. This is not yet used)"}
+ #^{ :private true :doc "Mark repeated structures rather than repeat them (N.B. This is not yet used)"}
  *print-shared* nil)
 
 (def
@@ -107,21 +107,21 @@ radix specifier is in the form #XXr where XX is the decimal value of *print-base
 
 (def #^{:private true} write-option-table
      {;:array            *print-array*
-      :base             'clojure.contrib.pprint/*print-base*,
+      :base             'clojure.pprint/*print-base*,
       ;;:case             *print-case*,
-      :circle           'clojure.contrib.pprint/*print-circle*,
+      :circle           'clojure.pprint/*print-circle*,
       ;;:escape           *print-escape*,
       ;;:gensym           *print-gensym*,
       :length           'clojure.core/*print-length*,
       :level            'clojure.core/*print-level*,
-      :lines            'clojure.contrib.pprint/*print-lines*,
-      :miser-width      'clojure.contrib.pprint/*print-miser-width*,
-      :dispatch         'clojure.contrib.pprint/*print-pprint-dispatch*,
-      :pretty           'clojure.contrib.pprint/*print-pretty*,
-      :radix            'clojure.contrib.pprint/*print-radix*,
+      :lines            'clojure.pprint/*print-lines*,
+      :miser-width      'clojure.pprint/*print-miser-width*,
+      :dispatch         'clojure.pprint/*print-pprint-dispatch*,
+      :pretty           'clojure.pprint/*print-pretty*,
+      :radix            'clojure.pprint/*print-radix*,
       :readably         'clojure.core/*print-readably*,
-      :right-margin     'clojure.contrib.pprint/*print-right-margin*,
-      :suppress-namespaces 'clojure.contrib.pprint/*print-suppress-namespaces*})
+      :right-margin     'clojure.pprint/*print-right-margin*,
+      :suppress-namespaces 'clojure.pprint/*print-suppress-namespaces*})
 
 
 (defmacro #^{:private true} binding-map [amap & body]
@@ -280,7 +280,7 @@ clojure.contrib.pprint.dispatch.clj."
             ;; TODO clean up choices string
             (str "Bad argument: " arg ". It must be one of " choices)))))
 
-(defn level-exceeded []
+(defn- level-exceeded []
   (and *print-level* (>= *current-level* *print-level*)))
 
 (defmacro pprint-logical-block 
