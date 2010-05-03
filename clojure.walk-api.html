@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>clojure.walk API reference (Clojure)</title>
+    <title>clojure.walk API reference (Clojure (Tom's Fork))</title>
     <link href="static/favicon.png" rel="icon" />
     <link href="static/favicon.png" rel="shortcut icon" />
     <link media="all" type="text/css" href="static/clojure.css" rel="stylesheet" />
@@ -25,25 +25,31 @@ namespace.
     <div id="AllContentContainer">
       <div id="Header">
 	<a id="Logo" href="index.html"><img alt="Clojure" height="100" width="100" src="static/clojure-icon.gif" /></a>
-	<h1><a title="page header title" id="page-header" href="index.html">Clojure</a></h1>
+	<h1><a title="page header title" id="page-header" href="index.html">Clojure Core API Reference</a></h1>
       </div>
-      <div id="leftcolumn"><div><div style="text-align: center;"></div>
+      <div id="leftcolumn"><div style="text-align: center;"></div>
 <div class="menu">
   <div class="WikiCustomNav WikiElement wiki">
+    <div class="BranchTOC">
+      <a class="wiki_link" href="#">Branches</a>
+      <ul id="left-sidebar-branch-list">
+        <li><a href="index.html" class="wiki_link">pprint</a></li>
+      </ul>
+    </div>
     <a class="wiki_link" href="index.html">Overview</a><br />
     <a class="wiki_link" href="api-index.html">API Index</a><br />
     <a class="wiki_link" href="#">Namespaces:</a>
     <ul id="left-sidebar-list">
-      <li><a href="clojure.core-api.html" class="wiki_link">clojure.core</a></li><li><a href="clojure.inspector-api.html" class="wiki_link">clojure.inspector</a></li><li><a href="clojure.main-api.html" class="wiki_link">clojure.main</a></li><li><a href="clojure.set-api.html" class="wiki_link">clojure.set</a></li><li><a href="clojure.stacktrace-api.html" class="wiki_link">clojure.stacktrace</a></li><li><a href="clojure.template-api.html" class="wiki_link">clojure.template</a></li><li><a href="clojure.test-api.html" class="wiki_link">clojure.test</a></li><li><a href="clojure.walk-api.html" class="wiki_link">clojure.walk</a></li><li><a href="clojure.xml-api.html" class="wiki_link">clojure.xml</a></li><li><a href="clojure.zip-api.html" class="wiki_link">clojure.zip</a></li>
+      <li><a href="clojure.core-api.html" class="wiki_link">clojure.core</a></li><li><a href="clojure.inspector-api.html" class="wiki_link">clojure.inspector</a></li><li><a href="clojure.main-api.html" class="wiki_link">clojure.main</a></li><li><a href="clojure.pprint-api.html" class="wiki_link">clojure.pprint</a></li><li><a href="clojure.set-api.html" class="wiki_link">clojure.set</a></li><li><a href="clojure.stacktrace-api.html" class="wiki_link">clojure.stacktrace</a></li><li><a href="clojure.template-api.html" class="wiki_link">clojure.template</a></li><li><a href="clojure.test-api.html" class="wiki_link">clojure.test</a></li><li><a href="clojure.walk-api.html" class="wiki_link">clojure.walk</a></li><li><a href="clojure.xml-api.html" class="wiki_link">clojure.xml</a></li><li><a href="clojure.zip-api.html" class="wiki_link">clojure.zip</a></li>
     </ul>
   </div>
 </div>
-</div></div>
+</div>
       <div id="rightcolumn">
 	<div id="Content">
 	  <div class="contentBox"><div class="innerContentBox">
               <div id="content_view" class="wiki wikiPage">
-                <div id="right-sidebar"><div><div id="toc">
+                <div id="right-sidebar"><div id="toc">
   <h1 class="nopad">Table of Contents</h1>
   <div style="margin-left: 1em;" class="toc-section">
     <a href="#toc0">Overview</a>
@@ -71,8 +77,9 @@ namespace.
     <br />
   </div>
 </div>
-</div></div>
-                <div id="content-tag"><div><h1 id="overview">API for <span id="namespace-name">clojure.walk</span></h1>
+</div>
+                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">clojure.walk</span>
+  <span id="branch-name">(pprint branch)</span></h1>
 by <span id="author">Stuart Sierra</span><br />
 <br />Usage:
 <pre>
@@ -90,6 +97,8 @@ the examples.
 Note: "walk" supports all Clojure data structures EXCEPT maps
 created with sorted-map-by.  There is no (obvious) way to retrieve
 the sorting function.</pre>
+
+
 <br />
 <h2>Public Variables and Functions</h2>
 <div id="var-entry">
@@ -100,7 +109,9 @@ the sorting function.</pre>
   <pre id="var-usage">Usage: (keywordize-keys m)
 </pre>
   <pre id="var-docstr">Recursively transforms all map keys from strings to keywords.</pre>
-  <a href="http://github.com/richhickey/clojure/blob/169290b08cc731f4182cdcb4e14362d2a6cd3e09/src/clj/clojure/walk.clj#L101" id="var-source">Source</a>
+  <span class="var-added"><span id="content">Added in Clojure (Tom's Fork) version 1.1</span><br /></span>
+  
+  <a href="http://github.com/tomfaulhaber/clojure/blob/c1c39162608551d50cfb18998d015974b11cfecc/src/clj/clojure/walk.clj#L95" id="var-source">Source</a>
 </div><div id="var-entry">
   <br />
   <hr />
@@ -109,7 +120,9 @@ the sorting function.</pre>
   <pre id="var-usage">Usage: (macroexpand-all form)
 </pre>
   <pre id="var-docstr">Recursively performs all possible macroexpansions in form.</pre>
-  <a href="http://github.com/richhickey/clojure/blob/169290b08cc731f4182cdcb4e14362d2a6cd3e09/src/clj/clojure/walk.clj#L129" id="var-source">Source</a>
+  <span class="var-added"><span id="content">Added in Clojure (Tom's Fork) version 1.1</span><br /></span>
+  
+  <a href="http://github.com/tomfaulhaber/clojure/blob/c1c39162608551d50cfb18998d015974b11cfecc/src/clj/clojure/walk.clj#L127" id="var-source">Source</a>
 </div><div id="var-entry">
   <br />
   <hr />
@@ -121,7 +134,9 @@ the sorting function.</pre>
 each sub-form, uses f's return value in place of the original.
 Recognizes all Clojure data structures except sorted-map-by.
 Consumes seqs as with doall.</pre>
-  <a href="http://github.com/richhickey/clojure/blob/169290b08cc731f4182cdcb4e14362d2a6cd3e09/src/clj/clojure/walk.clj#L63" id="var-source">Source</a>
+  <span class="var-added"><span id="content">Added in Clojure (Tom's Fork) version 1.1</span><br /></span>
+  
+  <a href="http://github.com/tomfaulhaber/clojure/blob/c1c39162608551d50cfb18998d015974b11cfecc/src/clj/clojure/walk.clj#L53" id="var-source">Source</a>
 </div><div id="var-entry">
   <br />
   <hr />
@@ -131,7 +146,9 @@ Consumes seqs as with doall.</pre>
 </pre>
   <pre id="var-docstr">Demonstrates the behavior of postwalk by printing each form as it is
 walked.  Returns form.</pre>
-  <a href="http://github.com/richhickey/clojure/blob/169290b08cc731f4182cdcb4e14362d2a6cd3e09/src/clj/clojure/walk.clj#L89" id="var-source">Source</a>
+  <span class="var-added"><span id="content">Added in Clojure (Tom's Fork) version 1.1</span><br /></span>
+  
+  <a href="http://github.com/tomfaulhaber/clojure/blob/c1c39162608551d50cfb18998d015974b11cfecc/src/clj/clojure/walk.clj#L81" id="var-source">Source</a>
 </div><div id="var-entry">
   <br />
   <hr />
@@ -142,7 +159,9 @@ walked.  Returns form.</pre>
   <pre id="var-docstr">Recursively transforms form by replacing keys in smap with their
 values.  Like clojure/replace but works on any data structure.  Does
 replacement at the leaves of the tree first.</pre>
-  <a href="http://github.com/richhickey/clojure/blob/169290b08cc731f4182cdcb4e14362d2a6cd3e09/src/clj/clojure/walk.clj#L122" id="var-source">Source</a>
+  <span class="var-added"><span id="content">Added in Clojure (Tom's Fork) version 1.1</span><br /></span>
+  
+  <a href="http://github.com/tomfaulhaber/clojure/blob/c1c39162608551d50cfb18998d015974b11cfecc/src/clj/clojure/walk.clj#L119" id="var-source">Source</a>
 </div><div id="var-entry">
   <br />
   <hr />
@@ -151,7 +170,9 @@ replacement at the leaves of the tree first.</pre>
   <pre id="var-usage">Usage: (prewalk f form)
 </pre>
   <pre id="var-docstr">Like postwalk, but does pre-order traversal.</pre>
-  <a href="http://github.com/richhickey/clojure/blob/169290b08cc731f4182cdcb4e14362d2a6cd3e09/src/clj/clojure/walk.clj#L71" id="var-source">Source</a>
+  <span class="var-added"><span id="content">Added in Clojure (Tom's Fork) version 1.1</span><br /></span>
+  
+  <a href="http://github.com/tomfaulhaber/clojure/blob/c1c39162608551d50cfb18998d015974b11cfecc/src/clj/clojure/walk.clj#L62" id="var-source">Source</a>
 </div><div id="var-entry">
   <br />
   <hr />
@@ -161,7 +182,9 @@ replacement at the leaves of the tree first.</pre>
 </pre>
   <pre id="var-docstr">Demonstrates the behavior of prewalk by printing each form as it is
 walked.  Returns form.</pre>
-  <a href="http://github.com/richhickey/clojure/blob/169290b08cc731f4182cdcb4e14362d2a6cd3e09/src/clj/clojure/walk.clj#L95" id="var-source">Source</a>
+  <span class="var-added"><span id="content">Added in Clojure (Tom's Fork) version 1.1</span><br /></span>
+  
+  <a href="http://github.com/tomfaulhaber/clojure/blob/c1c39162608551d50cfb18998d015974b11cfecc/src/clj/clojure/walk.clj#L88" id="var-source">Source</a>
 </div><div id="var-entry">
   <br />
   <hr />
@@ -172,7 +195,9 @@ walked.  Returns form.</pre>
   <pre id="var-docstr">Recursively transforms form by replacing keys in smap with their
 values.  Like clojure/replace but works on any data structure.  Does
 replacement at the root of the tree first.</pre>
-  <a href="http://github.com/richhickey/clojure/blob/169290b08cc731f4182cdcb4e14362d2a6cd3e09/src/clj/clojure/walk.clj#L115" id="var-source">Source</a>
+  <span class="var-added"><span id="content">Added in Clojure (Tom's Fork) version 1.1</span><br /></span>
+  
+  <a href="http://github.com/tomfaulhaber/clojure/blob/c1c39162608551d50cfb18998d015974b11cfecc/src/clj/clojure/walk.clj#L111" id="var-source">Source</a>
 </div><div id="var-entry">
   <br />
   <hr />
@@ -181,7 +206,9 @@ replacement at the root of the tree first.</pre>
   <pre id="var-usage">Usage: (stringify-keys m)
 </pre>
   <pre id="var-docstr">Recursively transforms all map keys from keywords to strings.</pre>
-  <a href="http://github.com/richhickey/clojure/blob/169290b08cc731f4182cdcb4e14362d2a6cd3e09/src/clj/clojure/walk.clj#L108" id="var-source">Source</a>
+  <span class="var-added"><span id="content">Added in Clojure (Tom's Fork) version 1.1</span><br /></span>
+  
+  <a href="http://github.com/tomfaulhaber/clojure/blob/c1c39162608551d50cfb18998d015974b11cfecc/src/clj/clojure/walk.clj#L103" id="var-source">Source</a>
 </div><div id="var-entry">
   <br />
   <hr />
@@ -194,11 +221,13 @@ functions.  Applies inner to each element of form, building up a
 data structure of the same type, then applies outer to the result.
 Recognizes all Clojure data structures except sorted-map-by.
 Consumes seqs as with doall.</pre>
-  <a href="http://github.com/richhickey/clojure/blob/169290b08cc731f4182cdcb4e14362d2a6cd3e09/src/clj/clojure/walk.clj#L46" id="var-source">Source</a>
+  <span class="var-added"><span id="content">Added in Clojure (Tom's Fork) version 1.1</span><br /></span>
+  
+  <a href="http://github.com/tomfaulhaber/clojure/blob/c1c39162608551d50cfb18998d015974b11cfecc/src/clj/clojure/walk.clj#L35" id="var-source">Source</a>
 </div>
 
 
-</div></div>
+</div>
               </div>
             </div>
           </div>
