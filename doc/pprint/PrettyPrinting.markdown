@@ -1,17 +1,8 @@
 # A Pretty Printer for Clojure
 
-To use pretty printing in clojure.contrib, it is necessary to build
-clojure.contrib with compiled classes. To do this, you must tell
-ant where to find clojure.jar. For me, this looks like:
-
-     ant -Dclojure.jar=../clojure/clojure.jar 
-
-because I keep clojure source and clojure.contrib source right next to
-each other. Just point the pathname to wherever you keep clojure.jar.
-
 ## Overview
 
-This library adds a new feature to Clojure: a generalized pretty
+This namespace adds a new feature to Clojure: a generalized pretty
 printer.
 
 The pretty printer is easy to use:
@@ -19,7 +10,7 @@ The pretty printer is easy to use:
     user=> (println (for [x (range 10)] (range x)))
     (() (0) (0 1) (0 1 2) (0 1 2 3) (0 1 2 3 4) (0 1 2 3 4 5) (0 1 2 3 4 5 6) (0 1 2 3 4 5 6 7) (0 1 2 3 4 5 6 7 8))
     nil
-    user=> (use 'clojure.contrib.pprint)             
+    user=> (use 'clojure.pprint)             
     nil
     user=> (pprint (for [x (range 10)] (range x)))         
     (()
@@ -38,21 +29,20 @@ The pretty printer is easy to use:
 The pretty printer supports two modes: _code_ which has special
 formatting for special forms and core macros and _simple_ (the
 default) which formats the various Clojure data structures as
-appropriate for raw data. In the future, the pretty printer will be
-highly customizable, but right now it is pretty simple.
+appropriate for raw data. In fact, the pretty printer is
+highly customizable, but basic use is pretty simple.
 
 All the functions and variables described here are in the
-clojure.contrib.pprint namespace. Using them is as simple as including
-clojure-contrib.jar to your classpath and adding a (:use clojure.contrib.pprint) to
-your namespace declarations.
+clojure.pprint namespace. Using them is as simple as adding a 
+`(:use clojure.pprint)` to
+your namespace declarations. Or, better practice would be 
+`(:use [clojure.pprint :only (<functions you wish to use>)])`.
 
 pprint is being developed by Tom Faulhaber (to mail me you can use
 my first name at my domain which is infolace.com).
 
-As part of clojure.contrib, the pretty printer is licensed under the 
+As with the rest of Clojure, the pretty printer is licensed under the 
 [http://opensource.org/licenses/eclipse-1.0.php Eclipse Public License 1.0].
-
-clojure.contrib is hosted on google code at [http://code.google.com/p/clojure-contrib/]
 
 Future development is guided by those using it, so send feedback about
 what's working and not working for you and what you'd like to see in the 
@@ -106,7 +96,7 @@ the most common situations:
 Clojure structures: seqs, maps, vectors, etc. in a fairly statndard
 way. When structures need to be broken across lines, following lines
 are indented to line up with the first element. `*`simple-dispatch`*` is
-the default and is good from showing the output of most operations.
+the default and is good for showing the output of most operations.
 
 `*`code-dispatch`*` - has special representation for various structures
 found in code: defn, condp, binding vectors, anonymous functions,

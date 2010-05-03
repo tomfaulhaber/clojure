@@ -66,11 +66,10 @@ and extensions with ~/.
 The pretty printer interface is similar, but not identical to the 
 interface in Common Lisp.
 
-The custom dispatch table functionality is not fully fleshed out yet.
-
 Next up: 
 
  * Support for ~/
+ * True compiled formats
  * Restructure unit tests into modular chunks.
  * Import tests from CLISP and SBCL.
  * Unit tests for exception conditions.
@@ -83,14 +82,14 @@ Next up:
 Once cl-format is in your path, adding it to your code is easy:
 
     (ns your-namespace-here
-      (:use clojure.contrib.pprint))
+      (:use [clojure.pprint :only (cl-format)]))
 
 If you want to refer to the cl-format function as "format" (rather
 than using the clojure function of that name), you can use this idiom:
 
     (ns your-namespace-here
       (:refer-clojure :exclude [format])
-      (:use clojure.contrib.pprint))
+      (:use clojure.pprint))
 
     (def format cl-format)
 
@@ -99,7 +98,7 @@ for instance, or maybe just because old habits die hard.
 
 From the REPL, you can grab it using (use):
 
-    (use 'clojure.contrib.pprint)
+    (use 'clojure.pprint)
 
 ### Calling cl-format
 
@@ -126,33 +125,17 @@ answer is ~,2f". Format strings are documented in detail in
 
 _args_ is a set of arguments whose use is defined by the format.
 
-### Compiled formats
-
-When you use a format string many times (for example, when you're outputting
-in a loop), you can improve your performance by compiling the format
-with _compile-format_. The result of compile format can be passed to
-_cl-format_ just like a format string but it doesn't need to be
-parsed.
-
-For example:
-
-    (def log-format (compile-format "~2,'0D/~2,'0D/~D ~2D:~2,'0D ~:[PM,AM]: ~A~%"))
-
-    (defn log [msg]
-      (let [[m d y h min am?] (some-date-decomposition-fn)]
-        (cl-format log-format m d y h min am? msg)))
- 
 ## Using column aware streams across format invocations
 
 Writers in Java have no real idea of current column or device page width, so the format
 directives that want to work relative to the current position on the
 page have nothing to work with. To deal with this, cl-format contains
-an extension to writer called PrettyWriter. PrettyWriter watches the
+an extension to writer called pretty-writer. A pretty-writer watches the
 output and keeps track of what column the current output is going to.
 
 When you call format and your format includes a directive that cares
 about what column it's in (~T, ~&, ~<...~>), cl-format will
-automatically wrap the Writer you passed in with a PrettyWriter. This
+automatically wrap the Writer you passed in with a pretty-writer. This
 means that by default all cl-format statements act like they begin on
 a fresh line and have a page width of 72.
 
@@ -160,24 +143,26 @@ For many applications, these assumptions are fine and you need to do
 nothing more. But sometimes you want to use multiple cl-format calls
 that output partial lines. You may also want to mix cl-format calls
 with the native clojure calls like print. If you want stay
-column-aware while doingg this you need to create a PrettyWriter of
+column-aware while doing this you need to create a pretty-writer of
 your own (and possibly bind it to `*`out`*`).
 
 As an example of this, this function takes a nested list and prints it
 as a table (returning the result as a string):
 
     (defn list-to-table [aseq column-width]
-      (let [stream (PrettyWriter. (java.io.StringWriter.))]
+      (let [string-writer (java.io.StringWriter.)
+            stream (get-pretty-writer string-writer)]
         (binding [*out* stream]
-         (doseq [row aseq]
-           (doseq [col row]
-             (cl-format true "~4D~7,vT" col column-width))
-           (prn)))
-        (.toString (.getWriter stream))))
+          (doseq [row aseq]
+            (doseq [col row]
+              (cl-format true "~4D~7,vT" col column-width))
+            (prn)))
+        (.flush stream)
+        (.toString string-writer)))
 
 (In reality, you'd probably do this as a single call to cl-format.)
 
-The constructor to PrettyWriter takes the Writer it's wrapping and
+The get-pretty-writer function takes the Writer to wrap and
 (optionally) the page width (in columns) for use with ~<...~>. 
 
 ## Examples
@@ -191,8 +176,8 @@ The following function uses cl-format to dump a columnized table of the Java sys
         (cl-format stream "~30A~A~%~{~20,,,'-A~10A~}~%~{~30A~S~%~}" 
     	           "Property" "Value" ["" "" "" ""] p)))
     
-There are some more examples in the clojure.contrib.pprint.examples
-package:
+There are some more examples in the pretty print examples gallery at 
+http://github.com/tomfaulhaber/pprint-examples:
 
  * hexdump - a program that uses cl-format to create a standard formatted hexdump of the requested stream.
  * multiply - a function to show a formatted multipication table in a very "first-order" way.
