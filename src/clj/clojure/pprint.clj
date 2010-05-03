@@ -17,7 +17,7 @@
 
 clojure.pprint implements a flexible system for printing structured data
 in a pleasing, easy-to-understand format. Basic use of the pretty printer is 
-simple, just call `pprint` instead of `println`. More advanced users can use 
+simple, just call pprint instead of println. More advanced users can use 
 the building blocks provided to create custom output formats. 
 
 Out of the box, pprint supports a simple structured format for basic data 
@@ -31,7 +31,7 @@ Common Lisp. Because pretty printing directives are directly integrated with
 cl-format, it supports very concise custom dispatch. It also provides
 a more powerful alternative to Clojure's standard format function.
 
-See documentation for those pprint and cl-format for more information or 
+See documentation for pprint and cl-format for more information or 
 complete documentation on the the clojure web site on github.",
        :added "1.2"}
     clojure.pprint
