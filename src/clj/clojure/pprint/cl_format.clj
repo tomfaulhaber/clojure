@@ -582,7 +582,7 @@ Note this should only be used for the last one in the sequence"
             (let [round-char (nth m1 round-pos)
                   ^String result (subs m1 0 round-pos)]
               (if (>= (int round-char) (int \5))
-                (let [result-val (Integer/valueOf result)
+                (let [result-val (Long/valueOf result)
                       leading-zeros (subs result 0 (min (prefix-count result \0) (- round-pos 1)))
                       round-up-result (str leading-zeros
                                            (String/valueOf (+ result-val 
